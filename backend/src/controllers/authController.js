@@ -31,7 +31,7 @@ const register = async (req, res) => {
     }
 
     // Validate invite code
-    const invite = await InviteCode.findByCode(inviteCode.toUpperCase());
+    const invite = await InviteCode.findByCode(inviteCode.trim().toUpperCase());
     if (!invite) {
       return res.status(400).json({ error: 'Invalid invite code' });
     }

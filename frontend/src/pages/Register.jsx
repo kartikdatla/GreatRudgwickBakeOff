@@ -43,7 +43,7 @@ const Register = () => {
     setLoading(true);
 
     try {
-      await register(formData.email, formData.password, formData.name, formData.inviteCode);
+      await register(formData.email, formData.password, formData.name, formData.inviteCode.trim());
       navigate('/');
     } catch (err) {
       setError(err.response?.data?.error || 'Registration failed');
