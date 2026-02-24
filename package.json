@@ -1,0 +1,17 @@
+{
+  "name": "great-rudgwick-bakeoff",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Great Rudgwick Bake Off - Full Stack Application",
+  "scripts": {
+    "install:all": "cd backend && npm install && cd ../frontend && npm install",
+    "build": "cd frontend && VITE_BASE_PATH=/bakeoff npm run build",
+    "start": "cd backend && NODE_ENV=production node src/server.js",
+    "dev:backend": "cd backend && npm run dev",
+    "dev:frontend": "cd frontend && npm run dev",
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "deploy:build": "npm run build && echo 'Build complete. Run: npm start'",
+    "db:init": "cd backend && npm run init-db",
+    "db:migrate": "cd backend && npm run migrate"
+  }
+}

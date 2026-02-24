@@ -1,0 +1,14 @@
+node_modules/
+.env
+.env.local
+.env.production
+.env.production.local
+*.log
+.DS_Store
+backend/uploads/*
+!backend/uploads/.gitkeep
+*.sqlite
+*.db
+dist/
+build/
+.vite/

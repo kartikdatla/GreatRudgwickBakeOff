@@ -1,0 +1,30 @@
+{
+  "name": "bakeoff-backend",
+  "version": "1.0.0",
+  "description": "Backend API for Great Rudgwick Bake Off",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js",
+    "init-db": "node src/config/initDatabase.js",
+    "migrate": "node src/config/migrate.js && node src/config/migrateReveal.js && node src/config/migrateInviteCodes.js",
+    "create-admin": "node src/scripts/createAdmin.js"
+  },
+  "keywords": ["baking", "competition", "api"],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "jsonwebtoken": "^9.0.2",
+    "bcryptjs": "^2.4.3",
+    "multer": "^1.4.5-lts.1",
+    "sqlite3": "^5.1.7",
+    "dotenv": "^16.3.1",
+    "express-validator": "^7.0.1",
+    "uuid": "^9.0.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
+  }
+}
