@@ -15,8 +15,6 @@ import Resources from './pages/Resources';
 import AdminPanel from './pages/AdminPanel';
 import UserManagement from './pages/UserManagement';
 
-const BASE_PATH = import.meta.env.VITE_BASE_PATH || '/';
-
 const PrivateRoute = ({ children, allowedRoles }) => {
   const { user, loading } = useAuth();
 
@@ -37,7 +35,7 @@ const PrivateRoute = ({ children, allowedRoles }) => {
 
 function App() {
   return (
-    <Router basename={BASE_PATH}>
+    <Router>
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />

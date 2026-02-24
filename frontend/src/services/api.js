@@ -1,17 +1,13 @@
 import axios from 'axios';
 
-const BASE_PATH = import.meta.env.VITE_BASE_PATH || '';
+// In dev, Vite proxy handles /api -> localhost:5001
+// In production, Express serves both frontend and API at the same origin
+const API_URL = import.meta.env.VITE_API_URL || '/api';
 
-// In dev, proxy handles /api -> localhost:5001
-// In production, API is at /bakeoff/api
-const API_URL = import.meta.env.VITE_API_URL || (BASE_PATH ? `${BASE_PATH}/api` : '/api');
-
-// Helper to resolve image/upload paths for production
-// Stored paths are like "/uploads/uuid.jpg" -- prefix with base path in production
+// Helper to resolve upload paths (pass-through, kept for consistency)
 export const getUploadUrl = (path) => {
   if (!path) return '';
-  if (path.startsWith('http')) return path;
-  return `${BASE_PATH}${path}`;
+  return path;
 };
 
 const api = axios.create({
@@ -34,8 +30,7 @@ api.interceptors.response.use(
     if (error.response?.status === 401) {
       localStorage.removeItem('token');
       localStorage.removeItem('user');
-      const loginPath = BASE_PATH ? `${BASE_PATH}/login` : '/login';
-      window.location.href = loginPath;
+      window.location.href = '/login';
     }
     return Promise.reject(error);
   }

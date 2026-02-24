@@ -1,13 +1,13 @@
 #!/bin/bash
 # Server setup script for Great Rudgwick Bake Off
-# Run on a fresh Ubuntu VPS (DigitalOcean, Hetzner, etc.)
+# Run on a fresh Ubuntu VPS (Hetzner, DigitalOcean, etc.)
 # Usage: bash setup.sh
 
 set -e
 
 APP_DIR="/var/www/bakeoff"
 REPO_URL="https://github.com/kartikdatla/GreatRudgwickBakeOff.git"
-DOMAIN="kartik.uk"
+DOMAIN="bakeoff.kartik.uk"
 
 echo "=== Great Rudgwick Bake Off - Server Setup ==="
 
@@ -38,7 +38,7 @@ cd frontend && npm install && cd ..
 
 # 6. Build frontend
 echo "Building frontend..."
-cd frontend && VITE_BASE_PATH=/bakeoff npm run build && cd ..
+cd frontend && npm run build && cd ..
 
 # 7. Create backend .env
 echo "Setting up environment..."
@@ -68,7 +68,7 @@ sudo nginx -t && sudo systemctl reload nginx
 
 # 11. SSL Certificate
 echo "Setting up SSL..."
-sudo certbot --nginx -d $DOMAIN -d www.$DOMAIN --non-interactive --agree-tos -m drkdatla@gmail.com
+sudo certbot --nginx -d $DOMAIN --non-interactive --agree-tos -m drkdatla@gmail.com
 
 # 12. Start with PM2
 echo "Starting application..."
@@ -79,7 +79,7 @@ pm2 startup
 
 echo ""
 echo "=== Setup Complete ==="
-echo "App is live at: https://$DOMAIN/bakeoff/"
+echo "App is live at: https://$DOMAIN/"
 echo ""
 echo "Useful commands:"
 echo "  pm2 status          - Check app status"
@@ -87,4 +87,4 @@ echo "  pm2 logs bakeoff    - View logs"
 echo "  pm2 restart bakeoff - Restart app"
 echo ""
 echo "To deploy updates:"
-echo "  cd $APP_DIR && git pull && cd frontend && VITE_BASE_PATH=/bakeoff npm run build && cd .. && pm2 restart bakeoff"
+echo "  cd $APP_DIR && git pull && cd frontend && npm run build && cd .. && pm2 restart bakeoff"

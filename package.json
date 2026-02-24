@@ -5,7 +5,7 @@
   "description": "Great Rudgwick Bake Off - Full Stack Application",
   "scripts": {
     "install:all": "cd backend && npm install && cd ../frontend && npm install",
-    "build": "cd frontend && VITE_BASE_PATH=/bakeoff npm run build",
+    "build": "cd frontend && npm run build",
     "start": "cd backend && NODE_ENV=production node src/server.js",
     "dev:backend": "cd backend && npm run dev",
     "dev:frontend": "cd frontend && npm run dev",
