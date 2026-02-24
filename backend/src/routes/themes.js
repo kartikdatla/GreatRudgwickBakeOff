@@ -15,7 +15,8 @@ const {
   deleteThemeFromPool,
   resetThemePool,
   redrawTheme,
-  setManualTheme
+  setManualTheme,
+  updateIntroVideo
 } = require('../controllers/themeController');
 const { authenticateToken, authorizeRoles } = require('../middleware/auth');
 
@@ -28,6 +29,7 @@ router.get('/', authenticateToken, getAllThemes);
 router.patch('/:themeId/lock', authenticateToken, authorizeRoles('Admin'), lockTheme);
 router.patch('/:themeId/reveal', authenticateToken, authorizeRoles('Admin'), revealToJudges);
 router.patch('/:themeId/hide', authenticateToken, authorizeRoles('Admin'), hideFromJudges);
+router.patch('/:themeId/intro-video', authenticateToken, authorizeRoles('Admin'), updateIntroVideo);
 router.patch('/:themeId', authenticateToken, authorizeRoles('Admin'), updateTheme);
 
 // Main themes (categories)

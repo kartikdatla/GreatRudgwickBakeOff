@@ -140,6 +140,7 @@ class Theme {
               year: row.year,
               locked_at: row.locked_at,
               revealed_to_judges: row.revealed_to_judges || false,
+              intro_video_url: row.intro_video_url || null,
               mainTheme: {
                 id: row.main_theme_id,
                 name: row.main_theme_name || row.name,
@@ -441,6 +442,19 @@ class Theme {
         if (err) reject(err);
         else resolve({ changes: this.changes });
       });
+    });
+  }
+
+  static async updateIntroVideo(themeId, videoUrl) {
+    return new Promise((resolve, reject) => {
+      db.run(
+        'UPDATE themes SET intro_video_url = ? WHERE id = ?',
+        [videoUrl || null, themeId],
+        function(err) {
+          if (err) reject(err);
+          else resolve({ changes: this.changes });
+        }
+      );
     });
   }
 }

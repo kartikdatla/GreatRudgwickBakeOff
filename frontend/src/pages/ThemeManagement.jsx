@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import api from '../services/api';
+import { getEmbedUrl, isValidVideoUrl } from '../utils/videoEmbed';
 
 const ThemeManagement = () => {
   const [activeTheme, setActiveTheme] = useState(null);
@@ -11,6 +12,8 @@ const ThemeManagement = () => {
   const [editingPoolTheme, setEditingPoolTheme] = useState(null);
   const [showAddForm, setShowAddForm] = useState(false);
   const [formData, setFormData] = useState({ name: '', description: '' });
+  const [videoUrl, setVideoUrl] = useState('');
+  const [savingVideo, setSavingVideo] = useState(false);
 
   useEffect(() => {
     fetchData();
@@ -23,7 +26,9 @@ const ThemeManagement = () => {
         api.get('/themes/pool/all')
       ]);
 
-      setActiveTheme(themeResponse.data.theme);
+      const theme = themeResponse.data.theme;
+      setActiveTheme(theme);
+      setVideoUrl(theme?.intro_video_url || '');
       setThemePool(poolResponse.data.themes);
     } catch (error) {
       setError('Failed to load themes');
@@ -211,6 +216,85 @@ const ThemeManagement = () => {
           <p className="text-neutral-500">No active theme. Draw one to get started!</p>
         )}
       </div>
+
+      {/* Intro Video Section */}
+      {activeTheme && (
+        <div className="card stagger-item" style={{ animationDelay: '0.15s' }}>
+          <h2 className="text-xl font-semibold mb-4">Monthly Intro Video</h2>
+          <p className="text-sm text-neutral-500 mb-4">
+            Add a YouTube or Vimeo link to introduce this month's theme. It will autoplay (muted) on the Dashboard when users log in.
+          </p>
+
+          <div className="flex gap-2 mb-4">
+            <input
+              type="url"
+              value={videoUrl}
+              onChange={(e) => setVideoUrl(e.target.value)}
+              className="input flex-1"
+              placeholder="Paste YouTube or Vimeo URL..."
+            />
+            <button
+              onClick={async () => {
+                if (videoUrl && !isValidVideoUrl(videoUrl)) {
+                  setError('Invalid URL. Please paste a YouTube or Vimeo link.');
+                  return;
+                }
+                setSavingVideo(true);
+                setError('');
+                setSuccess('');
+                try {
+                  await api.patch(`/themes/${activeTheme.id}/intro-video`, { videoUrl: videoUrl || null });
+                  setSuccess(videoUrl ? 'Intro video saved!' : 'Intro video removed.');
+                  fetchData();
+                } catch (err) {
+                  setError(err.response?.data?.error || 'Failed to save video');
+                } finally {
+                  setSavingVideo(false);
+                }
+              }}
+              disabled={savingVideo}
+              className="btn btn-primary btn-luxury text-sm whitespace-nowrap"
+            >
+              {savingVideo ? 'Saving...' : 'Save Video'}
+            </button>
+            {activeTheme.intro_video_url && (
+              <button
+                onClick={async () => {
+                  setSavingVideo(true);
+                  setError('');
+                  try {
+                    await api.patch(`/themes/${activeTheme.id}/intro-video`, { videoUrl: null });
+                    setVideoUrl('');
+                    setSuccess('Intro video removed.');
+                    fetchData();
+                  } catch (err) {
+                    setError('Failed to remove video');
+                  } finally {
+                    setSavingVideo(false);
+                  }
+                }}
+                className="btn btn-secondary text-sm text-red-600 whitespace-nowrap"
+              >
+                Remove
+              </button>
+            )}
+          </div>
+
+          {videoUrl && isValidVideoUrl(videoUrl) && (
+            <div className="rounded-xl overflow-hidden border border-neutral-200">
+              <div className="relative w-full" style={{ paddingBottom: '56.25%' }}>
+                <iframe
+                  src={getEmbedUrl(videoUrl)}
+                  className="absolute inset-0 w-full h-full"
+                  allow="autoplay; encrypted-media; picture-in-picture"
+                  allowFullScreen
+                  title="Intro video preview"
+                />
+              </div>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Theme Pool Section */}
       <div className="card stagger-item" style={{ animationDelay: '0.2s' }}>

@@ -272,6 +272,22 @@ const setManualTheme = async (req, res) => {
   }
 };
 
+const updateIntroVideo = async (req, res) => {
+  try {
+    const { themeId } = req.params;
+    const { videoUrl } = req.body;
+
+    await Theme.updateIntroVideo(themeId, videoUrl || null);
+    res.json({
+      message: videoUrl ? 'Intro video updated successfully' : 'Intro video removed',
+      intro_video_url: videoUrl || null
+    });
+  } catch (error) {
+    console.error('Update intro video error:', error);
+    res.status(500).json({ error: 'Failed to update intro video' });
+  }
+};
+
 module.exports = {
   drawTheme,
   getActiveTheme,
@@ -287,5 +303,6 @@ module.exports = {
   deleteThemeFromPool,
   resetThemePool,
   redrawTheme,
-  setManualTheme
+  setManualTheme,
+  updateIntroVideo
 };

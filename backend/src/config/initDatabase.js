@@ -59,6 +59,7 @@ const initDatabase = () => {
       locked_at DATETIME NULL,
       main_theme_id INTEGER,
       sub_theme_id INTEGER,
+      intro_video_url TEXT,
       FOREIGN KEY (main_theme_id) REFERENCES main_themes(id),
       FOREIGN KEY (sub_theme_id) REFERENCES theme_pool(id),
       UNIQUE(month, year)
@@ -66,6 +67,13 @@ const initDatabase = () => {
   `, (err) => {
     if (err) console.error('Error creating themes table:', err);
     else console.log('Themes table ready');
+  });
+
+  // Migration: add intro_video_url to existing themes table
+  db.run(`ALTER TABLE themes ADD COLUMN intro_video_url TEXT`, (err) => {
+    if (err && !err.message.includes('duplicate column')) {
+      console.error('Error adding intro_video_url column:', err);
+    }
   });
 
   // Cake submissions table

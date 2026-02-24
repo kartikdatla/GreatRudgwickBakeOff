@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
+import { getEmbedUrl } from '../utils/videoEmbed';
 import api from '../services/api';
 
 const Dashboard = () => {
@@ -67,6 +68,26 @@ const Dashboard = () => {
         </h1>
         <p className="text-xl text-gray-600">Hello, {user?.name}!</p>
       </div>
+
+      {/* Monthly Intro Video */}
+      {!loading && activeTheme?.intro_video_url && getEmbedUrl(activeTheme.intro_video_url) && (
+        <div className="card overflow-hidden animate-slide-up">
+          <h3 className="text-lg font-semibold text-neutral-800 mb-3 text-center">
+            This Month's Introduction
+          </h3>
+          <div className="rounded-xl overflow-hidden border border-neutral-200">
+            <div className="relative w-full" style={{ paddingBottom: '56.25%' }}>
+              <iframe
+                src={getEmbedUrl(activeTheme.intro_video_url)}
+                className="absolute inset-0 w-full h-full"
+                allow="autoplay; encrypted-media; picture-in-picture"
+                allowFullScreen
+                title="Monthly theme introduction"
+              />
+            </div>
+          </div>
+        </div>
+      )}
 
       {loading ? (
         <div className="text-center py-12">
