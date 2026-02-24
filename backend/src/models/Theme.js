@@ -457,6 +457,27 @@ class Theme {
       );
     });
   }
+
+  static async deleteTheme(themeId) {
+    return new Promise((resolve, reject) => {
+      // First get the theme to release its sub-theme back to the pool
+      db.get('SELECT sub_theme_id FROM themes WHERE id = ?', [themeId], (err, row) => {
+        if (err) return reject(err);
+        if (!row) return reject(new Error('Theme not found'));
+
+        // Release sub-theme back to pool
+        if (row.sub_theme_id) {
+          db.run('UPDATE theme_pool SET is_used = 0 WHERE id = ?', [row.sub_theme_id]);
+        }
+
+        // Delete the theme
+        db.run('DELETE FROM themes WHERE id = ?', [themeId], function(err) {
+          if (err) reject(err);
+          else resolve({ changes: this.changes });
+        });
+      });
+    });
+  }
 }
 
 module.exports = { Theme, MainTheme };

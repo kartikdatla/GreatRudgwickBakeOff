@@ -288,6 +288,22 @@ const updateIntroVideo = async (req, res) => {
   }
 };
 
+const deleteTheme = async (req, res) => {
+  try {
+    const { themeId } = req.params;
+
+    const result = await Theme.deleteTheme(themeId);
+    if (result.changes === 0) {
+      return res.status(404).json({ error: 'Theme not found' });
+    }
+
+    res.json({ message: 'Theme deleted successfully. Sub-theme returned to pool.' });
+  } catch (error) {
+    console.error('Delete theme error:', error);
+    res.status(500).json({ error: error.message || 'Failed to delete theme' });
+  }
+};
+
 module.exports = {
   drawTheme,
   getActiveTheme,
@@ -296,6 +312,7 @@ module.exports = {
   revealToJudges,
   hideFromJudges,
   updateTheme,
+  deleteTheme,
   getAllMainThemes,
   getAllThemesFromPool,
   addThemeToPool,

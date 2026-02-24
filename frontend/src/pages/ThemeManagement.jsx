@@ -201,14 +201,33 @@ const ThemeManagement = () => {
                     {activeTheme.locked_at && ' - Locked'}
                   </p>
                 </div>
-                {!activeTheme.locked_at && (
+                <div className="flex gap-2">
+                  {!activeTheme.locked_at && (
+                    <button
+                      onClick={() => setEditingTheme({ ...activeTheme })}
+                      className="btn btn-secondary text-sm"
+                    >
+                      Edit
+                    </button>
+                  )}
                   <button
-                    onClick={() => setEditingTheme({ ...activeTheme })}
-                    className="btn btn-secondary text-sm"
+                    onClick={async () => {
+                      if (!window.confirm('Delete this theme? The sub-theme will be returned to the pool so you can draw again.')) return;
+                      setError('');
+                      setSuccess('');
+                      try {
+                        await api.delete(`/themes/${activeTheme.id}`);
+                        setSuccess('Theme deleted. You can now draw a new one.');
+                        fetchData();
+                      } catch (err) {
+                        setError(err.response?.data?.error || 'Failed to delete theme');
+                      }
+                    }}
+                    className="btn btn-secondary text-sm text-red-600 border-red-200 hover:bg-red-50"
                   >
-                    Edit
+                    Delete
                   </button>
-                )}
+                </div>
               </div>
             </div>
           )
