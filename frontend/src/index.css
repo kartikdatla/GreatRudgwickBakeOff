@@ -474,16 +474,16 @@
 .stagger-item:nth-child(7) { animation-delay: 0.7s; }
 .stagger-item:nth-child(8) { animation-delay: 0.8s; }
 
-/* Smooth Color Transitions (Applied globally for theme changes) */
-* {
+/* Smooth Color Transitions (Applied to key elements for theme changes) */
+body, .card, .card-gold, .card-hover, .card-elevated, .card-interactive,
+.btn, .btn-primary, .btn-secondary, .btn-danger, .btn-ghost, .btn-luxury,
+.nav-link, .badge, .theme-card, .theme-card-luxury, .luxury-card,
+.stat-card, .medal, .alert {
   transition: background-color 0.8s cubic-bezier(0.4, 0, 0.2, 1),
               color 0.8s cubic-bezier(0.4, 0, 0.2, 1),
-              border-color 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-/* Preserve transform transitions */
-*:where(:not(input):not(textarea):not(select)) {
-  transition-property: background-color, color, border-color, transform, opacity;
+              border-color 0.8s cubic-bezier(0.4, 0, 0.2, 1),
+              transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+              opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* Luxury Card with Backdrop Blur */
@@ -523,6 +523,7 @@
   width: 100%;
   height: 100%;
   transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  -webkit-transform-style: preserve-3d;
   transform-style: preserve-3d;
 }
 
@@ -535,6 +536,7 @@
   position: absolute;
   width: 100%;
   height: 100%;
+  -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
 }
 
