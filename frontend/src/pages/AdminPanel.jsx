@@ -16,10 +16,13 @@ const AdminPanel = () => {
   const fetchData = async () => {
     try {
       const themeResponse = await api.get('/themes/active');
-      setActiveTheme(themeResponse.data.theme);
+      const theme = themeResponse.data.theme;
+      setActiveTheme(theme);
 
-      const leaderboardResponse = await api.get(`/scores/leaderboard/${themeResponse.data.theme.id}`);
-      setScoresRevealed(leaderboardResponse.data.revealed);
+      if (theme) {
+        const leaderboardResponse = await api.get(`/scores/leaderboard/${theme.id}`);
+        setScoresRevealed(leaderboardResponse.data.revealed);
+      }
     } catch (error) {
       setError('Failed to load admin data');
     } finally {
