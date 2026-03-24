@@ -147,7 +147,7 @@ const Leaderboard = () => {
                   )}
 
                   {scoresRevealed && entry.judge_count > 0 && (
-                    <div className="grid grid-cols-4 gap-3 bg-neutral-50 rounded-lg p-4 mt-2">
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-neutral-50 rounded-lg p-4 mt-2">
                       {[
                         { label: 'Taste', value: entry.avg_taste },
                         { label: 'Presentation', value: entry.avg_presentation },
