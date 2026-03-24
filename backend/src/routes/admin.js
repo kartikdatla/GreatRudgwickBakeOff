@@ -4,6 +4,7 @@ const { authenticateToken, authorizeRoles } = require('../middleware/auth');
 const { User, InviteCode } = require('../models/User');
 const crypto = require('crypto');
 const { sendBroadcastEmail } = require('../utils/email');
+const { EmailLog } = require('../models/Event');
 
 // All admin routes require Admin role
 router.use(authenticateToken, authorizeRoles('Admin'));
@@ -164,6 +165,9 @@ router.post('/email/broadcast', async (req, res) => {
     }
 
     const result = await sendBroadcastEmail(subject, message, 'all');
+
+    await EmailLog.create(subject, message, req.user.id, result.sent);
+
     res.json({
       message: `Email sent to ${result.sent} user${result.sent !== 1 ? 's' : ''}${result.failed > 0 ? `, ${result.failed} failed` : ''}`,
       ...result

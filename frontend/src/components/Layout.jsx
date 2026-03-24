@@ -86,6 +86,13 @@ const Layout = () => {
         Resources
       </Link>
 
+      <Link
+        to="/calendar"
+        className={`nav-link ${isActive('/calendar') ? 'nav-link-active' : ''}`}
+      >
+        Calendar
+      </Link>
+
       {isAdmin() && (
         <>
           <Link

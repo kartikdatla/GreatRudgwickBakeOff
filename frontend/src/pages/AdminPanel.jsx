@@ -103,7 +103,8 @@ const AdminPanel = () => {
     { to: '/theme-management', icon: '🎨', label: 'Manage and edit themes' },
     { to: '/submissions', icon: '📸', label: 'View all submissions' },
     { to: '/leaderboard', icon: '🏆', label: 'Check leaderboard' },
-    { to: '/resources', icon: '🔗', label: 'Manage resources' }
+    { to: '/resources', icon: '🔗', label: 'Manage resources' },
+    { to: '/calendar', icon: '📅', label: 'Calendar & events' }
   ];
 
   return (

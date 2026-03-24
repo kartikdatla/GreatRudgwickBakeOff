@@ -9,6 +9,7 @@ const submissionRoutes = require('./routes/submissions');
 const scoreRoutes = require('./routes/scores');
 const resourceRoutes = require('./routes/resources');
 const adminRoutes = require('./routes/admin');
+const eventRoutes = require('./routes/events');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -29,6 +30,7 @@ app.use('/api/submissions', submissionRoutes);
 app.use('/api/scores', scoreRoutes);
 app.use('/api/resources', resourceRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/events', eventRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {

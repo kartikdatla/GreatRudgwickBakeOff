@@ -14,6 +14,7 @@ import Leaderboard from './pages/Leaderboard';
 import Resources from './pages/Resources';
 import AdminPanel from './pages/AdminPanel';
 import UserManagement from './pages/UserManagement';
+import Calendar from './pages/Calendar';
 
 const PrivateRoute = ({ children, allowedRoles }) => {
   const { user, loading } = useAuth();
@@ -69,6 +70,7 @@ function App() {
           } />
           <Route path="leaderboard" element={<Leaderboard />} />
           <Route path="resources" element={<Resources />} />
+          <Route path="calendar" element={<Calendar />} />
           <Route path="admin" element={
             <PrivateRoute allowedRoles={['Admin']}>
               <AdminPanel />

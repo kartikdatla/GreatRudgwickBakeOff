@@ -210,6 +210,39 @@ const initDatabase = () => {
     else console.log('Invite codes table ready');
   });
 
+  // Events table (calendar)
+  db.run(`
+    CREATE TABLE IF NOT EXISTS events (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      title TEXT NOT NULL,
+      description TEXT,
+      event_date DATE NOT NULL,
+      event_time TEXT,
+      created_by INTEGER,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (created_by) REFERENCES users(id)
+    )
+  `, (err) => {
+    if (err) console.error('Error creating events table:', err);
+    else console.log('Events table ready');
+  });
+
+  // Email log table
+  db.run(`
+    CREATE TABLE IF NOT EXISTS email_log (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      subject TEXT NOT NULL,
+      message TEXT NOT NULL,
+      sent_by INTEGER,
+      recipient_count INTEGER DEFAULT 0,
+      sent_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (sent_by) REFERENCES users(id)
+    )
+  `, (err) => {
+    if (err) console.error('Error creating email_log table:', err);
+    else console.log('Email log table ready');
+  });
+
   console.log('Database initialization complete!');
 };
 
