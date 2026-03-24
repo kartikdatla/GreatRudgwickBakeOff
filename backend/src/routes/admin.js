@@ -5,6 +5,7 @@ const { User, InviteCode } = require('../models/User');
 const crypto = require('crypto');
 const { sendBroadcastEmail } = require('../utils/email');
 const { EmailLog } = require('../models/Event');
+const Anthropic = require('@anthropic-ai/sdk');
 
 // All admin routes require Admin role
 router.use(authenticateToken, authorizeRoles('Admin'));
@@ -175,6 +176,65 @@ router.post('/email/broadcast', async (req, res) => {
   } catch (error) {
     console.error('Error sending broadcast email:', error);
     res.status(500).json({ error: 'Failed to send email' });
+  }
+});
+
+// POST /api/admin/email/generate - AI-generate email from prompt
+router.post('/email/generate', async (req, res) => {
+  try {
+    const { prompt } = req.body;
+
+    if (!prompt) {
+      return res.status(400).json({ error: 'Prompt is required' });
+    }
+
+    if (!process.env.ANTHROPIC_API_KEY) {
+      return res.status(500).json({ error: 'AI email generation is not configured (missing API key)' });
+    }
+
+    const client = new Anthropic();
+
+    const response = await client.messages.create({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 1024,
+      messages: [
+        {
+          role: 'user',
+          content: `You are writing an email for the "Great Rudgwick Bake Off" — a fun workplace baking competition. Write a short, fun, enthusiastic email based on this prompt from the admin:
+
+"${prompt}"
+
+Rules:
+- Keep it concise (3-6 sentences for the body)
+- Be warm, friendly, and a bit playful — this is a fun baking competition!
+- Use baking puns or references where they fit naturally
+- Do NOT include greetings like "Hi everyone" or "Dear bakers" — the email system adds personalised greetings automatically
+- Do NOT include sign-offs like "Best regards" — the email template handles that
+- Do NOT use emojis
+
+Respond in this exact JSON format:
+{"subject": "the email subject line", "message": "the email body text"}`
+        }
+      ],
+    });
+
+    const text = response.content[0].text;
+
+    // Parse JSON from response (handle potential markdown wrapping)
+    const jsonMatch = text.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) {
+      return res.status(500).json({ error: 'Failed to parse AI response' });
+    }
+
+    const generated = JSON.parse(jsonMatch[0]);
+
+    res.json({
+      subject: generated.subject,
+      message: generated.message,
+    });
+  } catch (error) {
+    console.error('Error generating email:', error);
+    res.status(500).json({ error: 'Failed to generate email' });
   }
 });
 

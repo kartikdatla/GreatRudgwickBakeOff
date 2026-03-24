@@ -11,6 +11,8 @@ const AdminPanel = () => {
   const [emailSubject, setEmailSubject] = useState('');
   const [emailMessage, setEmailMessage] = useState('');
   const [emailSending, setEmailSending] = useState(false);
+  const [aiPrompt, setAiPrompt] = useState('');
+  const [aiGenerating, setAiGenerating] = useState(false);
 
   useEffect(() => {
     fetchData();
@@ -85,6 +87,23 @@ const AdminPanel = () => {
       setError(err.response?.data?.error || 'Failed to send email');
     } finally {
       setEmailSending(false);
+    }
+  };
+
+  const handleGenerateEmail = async () => {
+    if (!aiPrompt.trim()) return;
+
+    setAiGenerating(true);
+    setError('');
+
+    try {
+      const response = await api.post('/admin/email/generate', { prompt: aiPrompt });
+      setEmailSubject(response.data.subject);
+      setEmailMessage(response.data.message);
+    } catch (err) {
+      setError(err.response?.data?.error || 'Failed to generate email');
+    } finally {
+      setAiGenerating(false);
     }
   };
 
@@ -195,8 +214,31 @@ const AdminPanel = () => {
         <div className="card stagger-item" style={{ animationDelay: '0.3s' }}>
           <h2 className="text-xl font-semibold mb-4">Send Email to All Users</h2>
           <p className="text-neutral-500 mb-4">
-            Compose and send an email to all active users.
+            Compose and send an email to all active users. Use AI to draft a fun email or write your own.
           </p>
+
+          {/* AI prompt section */}
+          <div className="bg-gradient-to-r from-violet-50 to-purple-50 border border-violet-200 rounded-xl p-4 mb-4">
+            <label className="block text-sm font-semibold text-violet-800 mb-2">AI Email Writer</label>
+            <p className="text-xs text-violet-600 mb-2">Describe what you want the email to say and AI will draft it for you.</p>
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={aiPrompt}
+                onChange={(e) => setAiPrompt(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && !aiGenerating && handleGenerateEmail()}
+                placeholder="e.g. Remind everyone to bring their bakes in on Thursday"
+                className="flex-1 px-4 py-2.5 border border-violet-300 rounded-lg focus:ring-2 focus:ring-violet-500 focus:border-violet-500 outline-none transition-all bg-white text-sm"
+              />
+              <button
+                onClick={handleGenerateEmail}
+                disabled={aiGenerating || !aiPrompt.trim()}
+                className="px-4 py-2.5 bg-violet-600 hover:bg-violet-700 text-white rounded-lg font-medium text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
+              >
+                {aiGenerating ? 'Writing...' : 'Generate'}
+              </button>
+            </div>
+          </div>
 
           <div className="space-y-3">
             <div>
@@ -210,12 +252,23 @@ const AdminPanel = () => {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-neutral-700 mb-1">Message</label>
+              <div className="flex items-center justify-between mb-1">
+                <label className="block text-sm font-medium text-neutral-700">Message</label>
+                {emailMessage && aiPrompt && (
+                  <button
+                    onClick={handleGenerateEmail}
+                    disabled={aiGenerating}
+                    className="text-xs text-violet-600 hover:text-violet-800 font-medium transition-colors"
+                  >
+                    {aiGenerating ? 'Rewriting...' : 'Rewrite with AI'}
+                  </button>
+                )}
+              </div>
               <textarea
                 value={emailMessage}
                 onChange={(e) => setEmailMessage(e.target.value)}
                 placeholder="Write your message here..."
-                rows={4}
+                rows={5}
                 className="w-full px-4 py-2.5 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition-all resize-y"
               />
             </div>
