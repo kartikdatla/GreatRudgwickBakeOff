@@ -34,7 +34,7 @@ class Submission {
   static async getById(id) {
     return new Promise((resolve, reject) => {
       db.get(
-        `SELECT s.*, u.name as baker_name
+        `SELECT s.*, u.name as baker_name, u.email as baker_email
          FROM submissions s
          JOIN users u ON s.user_id = u.id
          WHERE s.id = ?`,

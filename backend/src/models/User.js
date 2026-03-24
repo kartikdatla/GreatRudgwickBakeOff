@@ -66,6 +66,15 @@ class User {
     });
   }
 
+  static async getAllActiveEmails() {
+    return new Promise((resolve, reject) => {
+      db.all('SELECT email, name FROM users WHERE is_active = 1', (err, rows) => {
+        if (err) reject(err);
+        else resolve(rows);
+      });
+    });
+  }
+
   static async deleteUser(userId) {
     return new Promise((resolve, reject) => {
       db.run('DELETE FROM users WHERE id = ?', [userId], function(err) {

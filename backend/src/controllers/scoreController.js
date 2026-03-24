@@ -2,6 +2,7 @@ const Score = require('../models/Score');
 const Theme = require('../models/Theme');
 const Settings = require('../models/Settings');
 const Submission = require('../models/Submission');
+const { notifyBakerScored, notifyScoresRevealed } = require('../utils/email');
 
 const submitScore = async (req, res) => {
   try {
@@ -40,6 +41,7 @@ const submitScore = async (req, res) => {
       res.json({ message: 'Score updated successfully' });
     } else {
       await Score.create(submissionId, judgeId, scores);
+      notifyBakerScored(submission.baker_email, submission.baker_name, submission.title).catch(() => {});
       res.status(201).json({ message: 'Score submitted successfully' });
     }
   } catch (error) {
@@ -100,6 +102,10 @@ const revealScores = async (req, res) => {
   try {
     const { reveal } = req.body;
     await Settings.revealScores(reveal);
+
+    if (reveal) {
+      notifyScoresRevealed().catch(() => {});
+    }
 
     res.json({
       message: `Scores ${reveal ? 'revealed' : 'hidden'} successfully`,

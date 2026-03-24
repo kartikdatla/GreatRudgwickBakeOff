@@ -1,5 +1,6 @@
 const { Theme, MainTheme } = require('../models/Theme');
 const { validateColorScheme } = require('../utils/colorValidation');
+const { notifyThemeDrawn } = require('../utils/email');
 
 const drawTheme = async (req, res) => {
   try {
@@ -17,6 +18,9 @@ const drawTheme = async (req, res) => {
     }
 
     const theme = await Theme.drawRandomTheme(month, year);
+
+    notifyThemeDrawn(theme.main_theme_name || theme.mainTheme?.name, month, year).catch(() => {});
+
     res.status(201).json({
       message: 'Theme drawn successfully',
       theme
