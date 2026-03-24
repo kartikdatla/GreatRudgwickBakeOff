@@ -8,6 +8,9 @@ const AdminPanel = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [emailSubject, setEmailSubject] = useState('');
+  const [emailMessage, setEmailMessage] = useState('');
+  const [emailSending, setEmailSending] = useState(false);
 
   useEffect(() => {
     fetchData();
@@ -55,6 +58,33 @@ const AdminPanel = () => {
       setScoresRevealed(reveal);
     } catch (err) {
       setError('Failed to update score visibility');
+    }
+  };
+
+  const handleSendEmail = async () => {
+    if (!emailSubject.trim() || !emailMessage.trim()) {
+      setError('Subject and message are required');
+      return;
+    }
+
+    if (!window.confirm('Send this email to all active users?')) return;
+
+    setEmailSending(true);
+    setError('');
+    setSuccess('');
+
+    try {
+      const response = await api.post('/admin/email/broadcast', {
+        subject: emailSubject,
+        message: emailMessage,
+      });
+      setSuccess(response.data.message);
+      setEmailSubject('');
+      setEmailMessage('');
+    } catch (err) {
+      setError(err.response?.data?.error || 'Failed to send email');
+    } finally {
+      setEmailSending(false);
     }
   };
 
@@ -162,6 +192,43 @@ const AdminPanel = () => {
         </div>
 
         <div className="card stagger-item" style={{ animationDelay: '0.3s' }}>
+          <h2 className="text-xl font-semibold mb-4">Send Email to All Users</h2>
+          <p className="text-neutral-500 mb-4">
+            Compose and send an email to all active users.
+          </p>
+
+          <div className="space-y-3">
+            <div>
+              <label className="block text-sm font-medium text-neutral-700 mb-1">Subject</label>
+              <input
+                type="text"
+                value={emailSubject}
+                onChange={(e) => setEmailSubject(e.target.value)}
+                placeholder="e.g. Reminder: Submit your bakes by Friday!"
+                className="w-full px-4 py-2.5 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition-all"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-neutral-700 mb-1">Message</label>
+              <textarea
+                value={emailMessage}
+                onChange={(e) => setEmailMessage(e.target.value)}
+                placeholder="Write your message here..."
+                rows={4}
+                className="w-full px-4 py-2.5 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition-all resize-y"
+              />
+            </div>
+            <button
+              onClick={handleSendEmail}
+              disabled={emailSending || !emailSubject.trim() || !emailMessage.trim()}
+              className="btn btn-primary btn-luxury disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {emailSending ? 'Sending...' : 'Send Email'}
+            </button>
+          </div>
+        </div>
+
+        <div className="card stagger-item" style={{ animationDelay: '0.4s' }}>
           <h2 className="text-xl font-semibold mb-4">Quick Actions</h2>
           <div className="grid sm:grid-cols-2 gap-3">
             {quickLinks.map((link) => (

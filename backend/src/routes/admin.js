@@ -3,6 +3,7 @@ const router = express.Router();
 const { authenticateToken, authorizeRoles } = require('../middleware/auth');
 const { User, InviteCode } = require('../models/User');
 const crypto = require('crypto');
+const { sendBroadcastEmail } = require('../utils/email');
 
 // All admin routes require Admin role
 router.use(authenticateToken, authorizeRoles('Admin'));
@@ -148,6 +149,28 @@ router.delete('/invites/:id', async (req, res) => {
   } catch (error) {
     console.error('Error deleting invite:', error);
     res.status(500).json({ error: 'Failed to delete invite code' });
+  }
+});
+
+// ============ EMAIL ============
+
+// POST /api/admin/email/broadcast - Send email to all active users
+router.post('/email/broadcast', async (req, res) => {
+  try {
+    const { subject, message } = req.body;
+
+    if (!subject || !message) {
+      return res.status(400).json({ error: 'Subject and message are required' });
+    }
+
+    const result = await sendBroadcastEmail(subject, message, 'all');
+    res.json({
+      message: `Email sent to ${result.sent} user${result.sent !== 1 ? 's' : ''}${result.failed > 0 ? `, ${result.failed} failed` : ''}`,
+      ...result
+    });
+  } catch (error) {
+    console.error('Error sending broadcast email:', error);
+    res.status(500).json({ error: 'Failed to send email' });
   }
 });
 

@@ -9,6 +9,7 @@ if (!process.env.SMTP_HOST) {
     notifyThemeDrawn: async () => {},
     notifyBakerScored: async () => {},
     notifyScoresRevealed: async () => {},
+    sendBroadcastEmail: async () => ({ sent: 0, failed: 0 }),
   };
   return;
 }
@@ -92,4 +93,37 @@ async function notifyScoresRevealed() {
   }
 }
 
-module.exports = { notifyThemeDrawn, notifyBakerScored, notifyScoresRevealed };
+async function sendBroadcastEmail(subject, message, recipientFilter) {
+  const allUsers = await User.getAllActiveEmails();
+  const recipients = recipientFilter === 'all'
+    ? allUsers
+    : allUsers; // future: filter by role if needed
+
+  let sent = 0;
+  let failed = 0;
+
+  for (const user of recipients) {
+    try {
+      await transporter.sendMail({
+        from: process.env.SMTP_FROM || process.env.SMTP_USER,
+        to: user.email,
+        subject,
+        html: `<div style="font-family: sans-serif; max-width: 500px;">
+          <h2 style="color: #b45309;">${subject}</h2>
+          <p>Hi ${user.name},</p>
+          <div style="margin: 16px 0; line-height: 1.6;">${message.replace(/\n/g, '<br>')}</div>
+          <a href="${SITE_URL}" style="display: inline-block; background: #f59e0b; color: white; padding: 10px 24px; border-radius: 6px; text-decoration: none; font-weight: bold;">Visit Bake Off</a>
+          <p style="color: #9ca3af; font-size: 12px; margin-top: 24px;">Great Rudgwick Bake Off</p>
+        </div>`,
+      });
+      sent++;
+    } catch (err) {
+      console.error(`Broadcast email failed to ${user.email}:`, err.message);
+      failed++;
+    }
+  }
+
+  return { sent, failed };
+}
+
+module.exports = { notifyThemeDrawn, notifyBakerScored, notifyScoresRevealed, sendBroadcastEmail };
