@@ -200,17 +200,20 @@ router.post('/email/generate', async (req, res) => {
       messages: [
         {
           role: 'user',
-          content: `You are writing an email for the "Great Rudgwick Bake Off" — a fun workplace baking competition. Write a short, fun, enthusiastic email based on this prompt from the admin:
+          content: `You are writing a casual email for the "Great Rudgwick Bake Off", a fun workplace baking competition. Write a short, natural-sounding email based on this prompt from the admin:
 
 "${prompt}"
 
 Rules:
-- Keep it concise (3-6 sentences for the body)
-- Be warm, friendly, and a bit playful — this is a fun baking competition!
-- Use baking puns or references where they fit naturally
-- Do NOT include greetings like "Hi everyone" or "Dear bakers" — the email system adds personalised greetings automatically
-- Do NOT include sign-offs like "Best regards" — the email template handles that
+- Write like a real person talking to colleagues, not like a marketing email or AI
+- Keep it short and casual, like a quick message you'd send to friends (3-5 sentences)
+- Light humour and baking references are welcome but don't force them
+- Use simple, everyday punctuation. NEVER use em dashes (--) or en dashes. Use commas, full stops, or just start a new sentence instead
+- Do NOT include greetings like "Hi everyone" or "Dear bakers", the email system adds personalised greetings automatically
+- Do NOT include sign-offs like "Best regards", the email template handles that
 - Do NOT use emojis
+- Do NOT use exclamation marks on every sentence, one or two max
+- Avoid corporate buzzwords, AI-sounding phrases, or overly polished language
 
 Respond in this exact JSON format:
 {"subject": "the email subject line", "message": "the email body text"}`
