@@ -33,11 +33,7 @@ const getActiveTheme = async (req, res) => {
     const userRole = req.user ? req.user.role : null;
 
     const theme = await Theme.getActive(userRole);
-    if (!theme) {
-      return res.status(404).json({ error: 'No active theme found' });
-    }
-
-    res.json({ theme });
+    res.json({ theme: theme || null });
   } catch (error) {
     console.error('Get active theme error:', error);
     res.status(500).json({ error: 'Failed to get active theme' });
